@@ -13,6 +13,7 @@ class Category extends Model
     public function gameCategory()
     {
 
-        return $this->belongsTo(Game::class);
+        // return $this->belongsTo(Game::class);
+        return $this->hasMany(Game::class);
     }
 }

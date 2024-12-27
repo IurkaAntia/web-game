@@ -7,7 +7,7 @@ const TicTacToe = ({ game }) => {
   const [winner, setWinner] = useState(null);
   const point = game.points;
   console.log(point);
-  const [score, setScore] = useState(point);
+  const [score, setScore] = useState(point || 0);
   const [gameOverMessage, setGameOverMessage] = useState("");
 
   const checkWinner = (board) => {
@@ -68,7 +68,7 @@ const TicTacToe = ({ game }) => {
       setWinner(playerWinner);
 
       if (playerWinner === "X") {
-        const increment = 10;
+        const increment = rules.points_for_exact;
         const updatedScore = score + increment;
         setScore(updatedScore);
         setGameOverMessage("You win! Congratulations!");

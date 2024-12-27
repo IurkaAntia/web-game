@@ -18,7 +18,7 @@ const Register = () => {
         email,
         password,
       });
-      navigate("/login");
+      navigate("/dashboard");
     } catch (err) {
       setError("Registration failed. Please try again." + err.message);
     }
