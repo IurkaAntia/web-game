@@ -42,4 +42,9 @@ class Game extends Model
             ->withPivot('points', 'played_at')
             ->withTimestamps();
     }
+
+    public function category()
+    {
+        return $this->hasMany(Category::class);
+    }
 }
