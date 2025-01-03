@@ -1,24 +1,17 @@
-import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../../store/slices/authSlice"; // Import logout action
 
 const Header = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      setIsAuthenticated(true);
-      navigate("/dashboard");
-    } else {
-      setIsAuthenticated(false);
-    }
-  }, [navigate]);
+  // Access authentication state from Redux store
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    setIsAuthenticated(false);
-    navigate("/login");
+    dispatch(logout()); // Dispatch the logout action
+    navigate("/dashboard"); // Navigate to the login page
   };
 
   return (
@@ -30,7 +23,7 @@ const Header = () => {
             {!isAuthenticated ? (
               <>
                 <li>
-                  <Link to="/login" className="hover:text-blue-300">
+                  <Link to="/dashboard" className="hover:text-blue-300">
                     Login
                   </Link>
                 </li>

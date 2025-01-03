@@ -1,50 +1,32 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header";
 import Dashboard from "./auth/Dashboard";
 import Login from "./auth/Login";
+import { fetchUser, logout } from "../store/slices/authSlice";
 
 const App = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { error, isAuthenticated } = useSelector((state) => state.auth);
 
+  // Fetch user data when the app loads
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      dispatch(logout()); // If no token, logout user
+      return;
+    }
 
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get("http://localhost:8000/api/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUser(response.data);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+    // Dispatch fetchUser to load the user data
+    dispatch(fetchUser());
+  }, [dispatch]);
 
   return (
-    <>
+    <div>
       <Header />
-      {user ? <Dashboard /> : <Login />}
-    </>
+      {error && <p>{error}</p>}
+      {isAuthenticated ? <Dashboard /> : <Login />}
+    </div>
   );
 };
 

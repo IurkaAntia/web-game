@@ -1,26 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { login, selectAuth } from "../../store/slices/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { loading, error } = useSelector(selectAuth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:8000/api/login", {
-        email,
-        password,
-      });
-
-      localStorage.setItem("auth_token", response.data.token);
+    dispatch(login({ email, password })).then((action) => {
       navigate("/dashboard");
-    } catch (err) {
-      setError("Invalid credentials. Please try again." + err.message);
-    }
+    });
   };
 
   return (
@@ -60,8 +55,9 @@ const Login = () => {
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
