@@ -34,9 +34,3 @@ cd test-project-react
 npm install
 
 ```
-
-### Key Updates:
-- Commands for testing both Laravel and React are now included.
-- The commands for building the React project and clearing Laravel caches are also highlighted.
-
-This should now provide a full set of commands along with setup instructions for your project.
