@@ -11,7 +11,7 @@ Before setting up the project, make sure you have the following installed on you
 - [PHP](https://www.php.net/) (version 8.0 or higher)
 - [Composer](https://getcomposer.org/) (for Laravel dependencies)
 - [Node.js](https://nodejs.org/) (version 14 or higher)
-- [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/) (for React dependencies)
+- [npm](https://www.npmjs.com/) (for React dependencies)
 
 ## Installation
 
