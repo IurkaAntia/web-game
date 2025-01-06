@@ -18,6 +18,11 @@ Before setting up the project, make sure you have the following installed on you
 ### 1. Clone the Repository
 
 Clone the repository to your local machine:
+```bash
+git clone https://github.com/IurkaAntia/web-game.git
+
+```
+### 2. Set up Project
 
 ```bash
 cd Test-Project
