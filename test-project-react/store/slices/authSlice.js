@@ -69,7 +69,7 @@ export const login =
 
 // Register action
 export const register =
-  ({ name, email, password, password_confirmation }) =>
+  ({ name, email, password }) =>
   async (dispatch) => {
     dispatch(authStart());
     try {
@@ -77,7 +77,6 @@ export const register =
         name,
         email,
         password,
-        password_confirmation,
       });
 
       const { token, user } = response.data;

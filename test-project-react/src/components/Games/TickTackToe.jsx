@@ -6,7 +6,6 @@ function TicTacToe({ game }) {
   const [isXNext, setIsXNext] = useState(true);
   const [winner, setWinner] = useState(null);
   const point = game.points;
-  console.log(point);
   const [score, setScore] = useState(point || 0);
   const [gameOverMessage, setGameOverMessage] = useState("");
 

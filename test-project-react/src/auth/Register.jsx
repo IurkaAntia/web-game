@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { register, selectAuth } from "../../store/slices/authSlice";
-import Header from "../components/Header";
 
 function Register() {
   const [name, setName] = useState("");
@@ -15,16 +14,12 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(register({ name, email, password })).then((action) => {
-      if (action.payload) {
-        navigate("/dashboard");
-      }
-    });
+    dispatch(register({ name, email, password }));
+    navigate("/login");
   };
 
   return (
     <>
-      <Header />
       <div className="flex justify-center items-center h-screen bg-gray-100">
         <div className="w-full max-w-sm p-8 bg-white rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-center text-blue-600 mb-6">

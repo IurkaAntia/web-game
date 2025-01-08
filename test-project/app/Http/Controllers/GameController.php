@@ -31,7 +31,7 @@ class GameController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $data = $request->only(['name', 'category_id', 'description', 'is_active']);
+        $data = $request->only(['name', 'category_id', 'description', 'is_active', 'rules']);
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('games', 'public');
@@ -43,8 +43,14 @@ class GameController extends Controller
     }
 
     // Update a game
-    public function update(Request $request, Game $game)
+    public function update(Request $request, $id)
     {
+        $game = Game::find($id);
+
+        if (!$game) {
+            return response()->json(['message' => 'Game not found'], 404);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
             'category_id' => 'sometimes|required|exists:categories,id',
@@ -67,6 +73,7 @@ class GameController extends Controller
 
         return response()->json($game);
     }
+
 
     // Delete a game
     public function destroy(Game $game)

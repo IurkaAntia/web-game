@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createGame, selectGames } from "../../store/slices/gamesSlice";
+import { fetchGameById, updateGame } from "../../store/slices/gamesSlice";
 
-function GameCreate() {
+function GameUpdate() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error } = useSelector(selectGames);
 
+  const { game, loading } = useSelector((state) => state.games);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -14,6 +17,24 @@ function GameCreate() {
     is_active: true,
     category_id: "",
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const action = await dispatch(fetchGameById(id));
+
+      const gameData = action.payload;
+      setFormData({
+        name: gameData.name,
+        description: gameData.description,
+        rules: JSON.stringify(gameData.rules || {}),
+        image: null,
+        is_active: gameData.is_active,
+        category_id: gameData.category_id,
+      });
+    };
+
+    fetchData();
+  }, [dispatch, id]);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -26,23 +47,26 @@ function GameCreate() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const updatedData = { ...formData };
+    if (!formData.image) delete updatedData.image;
 
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-      console.log(data);
-    });
-
-    dispatch(createGame(data));
+    try {
+      await dispatch(updateGame({ id, data: updatedData }));
+      navigate("/games");
+    } catch (error) {
+      console.error("Failed to update the game:", error);
+    }
   };
+
+  if (loading) {
+    return <div className="text-center py-10">Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Create Game</h1>
-      {loading && <p className="text-blue-500">Creating game...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      <h1 className="text-3xl font-bold mb-6">Update Game</h1>
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-lg space-y-6"
@@ -97,7 +121,7 @@ function GameCreate() {
         {/* Image */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Upload Image
+            Upload Image (Optional)
           </label>
           <input
             type="file"
@@ -142,9 +166,8 @@ function GameCreate() {
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded"
-            disabled={loading}
           >
-            Create Game
+            Update Game
           </button>
         </div>
       </form>
@@ -152,4 +175,4 @@ function GameCreate() {
   );
 }
 
-export default GameCreate;
+export default GameUpdate;

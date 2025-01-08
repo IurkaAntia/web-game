@@ -60,8 +60,11 @@ function Dashboard() {
                   >
                     Play now →
                   </p>
-                  {user.role == "admin" && (
-                    <p className="text-blue-600 font-medium cursor-pointer">
+                  {user.role === "admin" && (
+                    <p
+                      className="text-blue-600 font-medium cursor-pointer"
+                      onClick={() => navigate(`/update/${game.id}`)} // Replace `gameId` with the actual ID
+                    >
                       update
                     </p>
                   )}

@@ -18,13 +18,15 @@ function Header() {
     if (!user) {
       dispatch(fetchUser()); // Fetch user data if not already available
     }
-  }, [dispatch]);
+  }, [dispatch, user]);
 
   return (
     <header className="bg-blue-600 text-white p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-bold">
+            <Link to="/dashboard">Dashboard</Link>
+          </h1>
           {user && (
             <p className="mt-2">
               Welcome, <span className="font-semibold">{user.name}</span>! You
@@ -49,28 +51,30 @@ function Header() {
                 </li>
               </>
             ) : (
-              <li className="flex items-center space-x-4">
-                {user?.role === "admin" && (
+              window.location.pathname === "/dashboard" && ( // Correct condition here
+                <li className="flex items-center space-x-4">
+                  {user?.role === "admin" && (
+                    <button
+                      onClick={() => navigate("/create")}
+                      className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+                    >
+                      Create
+                    </button>
+                  )}
                   <button
-                    onClick={() => navigate("/create")}
-                    className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+                    onClick={handleLogout}
+                    className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
                   >
-                    Create
+                    Logout
                   </button>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-                >
-                  Logout
-                </button>
-              </li>
+                </li>
+              )
             )}
           </ul>
         </nav>
       </div>
     </header>
   );
-};
+}
 
 export default Header;
