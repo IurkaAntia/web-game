@@ -12,8 +12,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [UserController::class, 'user']);
     Route::get('games', [GameController::class, 'index']);
     Route::get('games/{game}', [GameController::class, 'joinGame']);
-    Route::get('games/create', [GameController::class, 'store']);
-    Route::put('games/{game}/edit', [GameController::class, 'update']);
+    Route::post('games/store', [GameController::class, 'store']);
+    Route::put('games/{game}/update', [GameController::class, 'update']);
     Route::post('games/{game}/play', [GameController::class, 'playGame']);
 });
 

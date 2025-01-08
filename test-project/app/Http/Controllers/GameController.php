@@ -21,10 +21,9 @@ class GameController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required|exists:category,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'description' => 'nullable|string',
-            'is_active' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -37,10 +36,13 @@ class GameController extends Controller
             $data['image'] = $request->file('image')->store('games', 'public');
         }
 
+        // Create the game with the provided data
         $game = Game::create($data);
 
         return response()->json($game, 201);
     }
+
+
 
     // Update a game
     public function update(Request $request, $id)
