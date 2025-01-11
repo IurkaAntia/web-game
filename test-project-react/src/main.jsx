@@ -7,7 +7,7 @@ import App from "./App.jsx";
 import Login from "./auth/Login.jsx";
 import Register from "./auth/Register.jsx";
 import GameShow from "./components/GameShow.jsx";
-import store from "../store/store.js"; // Import the Redux store
+import store from "../store/store.js";
 import GameCreate from "./components/GameCreate.jsx";
 import Header from "./components/Header.jsx";
 import GameUpdate from "./components/GameUpdate.jsx";

@@ -55,11 +55,8 @@ function GameCreate() {
       image: formData.image,
     };
 
-    console.log(data.image);
-    // Dispatch the update action with JSON data
     dispatch(createGame(data));
 
-    // Redirect after successful submission
     navigate("/dashboard");
   };
 

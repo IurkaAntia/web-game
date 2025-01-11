@@ -87,7 +87,7 @@ export const {
   deleteGameFailure,
 } = gamesSlice.actions;
 
-// Thunks
+
 export const fetchGames = () => async (dispatch) => {
   dispatch(fetchGamesStart());
   try {

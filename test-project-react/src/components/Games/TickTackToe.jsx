@@ -10,7 +10,7 @@ function TicTacToe({ game }) {
   const [moves, setMoves] = useState(0);
   const [difficulty, setDifficulty] = useState(
     game.metadata?.difficulty || "easy"
-  ); // Easy by default
+  );
   const [gameOverMessage, setGameOverMessage] = useState("");
 
   const rules = JSON.parse(game.game.rules);
@@ -70,7 +70,7 @@ function TicTacToe({ game }) {
     const newBoard = board.slice();
     newBoard[index] = "X";
 
-    setMoves((prev) => prev + 1); // Increment move count
+    setMoves((prev) => prev + 1);
 
     const playerWinner = checkWinner(newBoard);
 
@@ -157,11 +157,9 @@ function TicTacToe({ game }) {
     setGameOverMessage("");
   };
 
-  // Reset score when the component unmounts (or when navigating away)
   useEffect(() => {
-    // Optionally, you could reset score or level if game is reloaded
-    setScore(0); // Reset score on load (if that's desired)
-  }, [game.game.id]); // Trigger reset when the game ID changes (or whenever game updates)
+    setScore(0);
+  }, [game.game.id]); 
 
   return (
     <div className="flex flex-col items-center py-6">

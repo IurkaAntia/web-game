@@ -51,5 +51,4 @@ export const fetchCategory = () => async (dispatch) => {
   }
 };
 
-// Export reducer
 export default categorySlice.reducer;

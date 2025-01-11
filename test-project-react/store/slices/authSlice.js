@@ -45,7 +45,6 @@ const authSlice = createSlice({
 export const { authStart, authSuccess, authFailure, logout, setUser } =
   authSlice.actions;
 
-// Login action
 export const login =
   ({ email, password }) =>
   async (dispatch) => {
@@ -58,7 +57,6 @@ export const login =
 
       const { token, user } = response.data;
 
-      // Store token in local storage
       localStorage.setItem("auth_token", token);
 
       dispatch(authSuccess({ user, token }));
@@ -81,7 +79,6 @@ export const register =
 
       const { token, user } = response.data;
 
-      // Store token in local storage
       localStorage.setItem("auth_token", token);
 
       dispatch(authSuccess({ user, token }));
@@ -90,7 +87,6 @@ export const register =
     }
   };
 
-// Check if the user is logged in
 export const fetchUser = () => async (dispatch) => {
   dispatch(authStart());
   const token = localStorage.getItem("auth_token");

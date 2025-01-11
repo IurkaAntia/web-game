@@ -35,10 +35,9 @@ class GameController extends Controller
         $data = $request->only(['name', 'category_id', 'description', 'is_active', 'rules']);
 
         if (isset($data['rules'])) {
-            // Check if 'rules' is a JSON string and decode it
+
             $decodedRules = json_decode($data['rules'], true);
 
-            // If it’s valid JSON, store it as an array
             if (json_last_error() === JSON_ERROR_NONE) {
                 $data['rules'] = $decodedRules;
             }
