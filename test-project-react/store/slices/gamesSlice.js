@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const token = localStorage.getItem("auth_token");
@@ -161,22 +161,19 @@ export const createGame = (gameData) => async (dispatch) => {
 
 export const deleteGame = (id) => async (dispatch) => {
   try {
-    const token = localStorage.getItem("auth_token"); // Get token from localStorage
-    // Make a DELETE request to the API
+    const token = localStorage.getItem("auth_token");
     await axios.delete(`http://localhost:8000/api/games/${id}/destroy`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    // If the request is successful, update the state by removing the game
     dispatch(deleteGameSuccess(id));
   } catch (error) {
     console.error(
       "Error deleting game:",
       error.response?.data || error.message
     );
-    // Optionally handle the error in state
     dispatch(deleteGameFailure(error.response?.data || error.message));
   }
 };

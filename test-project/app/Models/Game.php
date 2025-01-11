@@ -17,6 +17,8 @@ class Game extends Model
         'description',
         'image',
         'category_id',
+        'is_active',
+        'rules',
 
     ];
 

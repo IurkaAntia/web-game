@@ -11,6 +11,7 @@ function GameUpdate() {
 
   const { games, loading, error } = useSelector((state) => state.games);
   const { category } = useSelector((state) => state.category);
+  const [currentImage, setCurrentImage] = useState("");
 
   const game = games.find((game) => game.id === parseInt(id));
 
@@ -23,10 +24,7 @@ function GameUpdate() {
     category_id: "",
   });
 
-  const [currentImage, setCurrentImage] = useState(""); // Store current image URL
-
   useEffect(() => {
-    // Fetch categories from the backend
     dispatch(fetchCategory());
   }, [dispatch]);
 
@@ -43,7 +41,7 @@ function GameUpdate() {
 
       setCurrentImage(
         game.image ? `http://localhost:8000/storage/${game.image}` : ""
-      ); // Set current image path
+      );
     }
   }, [game]);
 
@@ -55,15 +53,23 @@ function GameUpdate() {
   };
 
   const handleChange = (e) => {
-    const { name, files } = e.target;
-    if (files && files[0]) {
+    const { name, value, type, checked, files } = e.target;
+    if (type === "checkbox") {
+      setFormData({ ...formData, [name]: checked });
+    } else if (type === "file") {
+      const file = files[0];
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, [name]: reader.result }); // base64 string here
+        setFormData({ ...formData, [name]: reader.result });
       };
-      reader.readAsDataURL(files[0]); // Convert to base64
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -76,6 +82,7 @@ function GameUpdate() {
           ? JSON.stringify(formData.rules)
           : formData.rules,
       image: formData.image,
+      is_active: formData.is_active,
     };
 
     dispatch(updateGame(id, data));
@@ -177,14 +184,13 @@ function GameUpdate() {
             <input
               type="checkbox"
               name="is_active"
-              checked={formData.is_active}
-              onChange={handleChange}
+              checked={formData.is_active} // Bind the checkbox state to formData.is_active
+              onChange={handleChange} // Handle changes in state when clicked
               className="h-4 w-4 text-blue-500 focus:ring-blue-400 border-gray-300 rounded"
             />
             <span className="text-sm text-gray-700">Active</span>
           </label>
         </div>
-
         {/* Category */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -219,7 +225,7 @@ function GameUpdate() {
           </button>
         </div>
         <div className="container mx-auto p-6">
-          {/* Update form here */}
+          {/* Delete Button */}
           <button
             onClick={handleDelete}
             className="bg-red-500 hover:bg-red-600 text-white font-medium px-6 py-2 rounded mt-4"
