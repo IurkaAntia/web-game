@@ -20,7 +20,8 @@ function GameShow() {
   const renderGame = () => {
     if (loading)
       return <p className="text-gray-500">Loading game details...</p>;
-    if (!game) return <p className="text-red-500">Game not found.</p>;
+    if (!game || !game.game)
+      return <p className="text-red-500">Game not found.</p>;
 
     switch (game.game.name) {
       case "Guess the Number":

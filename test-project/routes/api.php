@@ -18,6 +18,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('games/store', [GameController::class, 'store']);
     Route::put('games/{game}/update', [GameController::class, 'update']);
     Route::post('games/{game}/play', [GameController::class, 'playGame']);
+    Route::delete('/games/{id}/destroy', [GameController::class, 'destroy']);
+
 });
 
 Route::post('/logout', [AuthController::class, 'logout']);

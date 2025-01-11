@@ -16,7 +16,7 @@ function Header() {
 
   useEffect(() => {
     if (!user) {
-      dispatch(fetchUser()); // Fetch user data if not already available
+      dispatch(fetchUser()); 
     }
   }, [dispatch, user]);
 

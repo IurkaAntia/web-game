@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchGameById, updateGame } from "../../store/slices/gamesSlice";
+import { updateGame, deleteGame } from "../../store/slices/gamesSlice";
+import { fetchCategory } from "../../store/slices/categorySlice";
 
 function GameUpdate() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { game, loading } = useSelector((state) => state.games);
+  const { games, loading, error } = useSelector((state) => state.games);
+  const { category } = useSelector((state) => state.category);
+
+  const game = games.find((game) => game.id === parseInt(id));
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -18,50 +23,75 @@ function GameUpdate() {
     category_id: "",
   });
 
+  const [currentImage, setCurrentImage] = useState(""); // Store current image URL
+
   useEffect(() => {
-    const fetchData = async () => {
-      const action = await dispatch(fetchGameById(id));
+    // Fetch categories from the backend
+    dispatch(fetchCategory());
+  }, [dispatch]);
 
-      const gameData = action.payload;
+  useEffect(() => {
+    if (game) {
       setFormData({
-        name: gameData.name,
-        description: gameData.description,
-        rules: JSON.stringify(gameData.rules || {}),
-        image: null,
-        is_active: gameData.is_active,
-        category_id: gameData.category_id,
+        name: game.name || "",
+        description: game.description || "",
+        rules: JSON.stringify(game.rules || {}),
+        image: null, // Reset image field on load
+        is_active: game.is_active ?? true,
+        category_id: game.category_id || "",
       });
-    };
 
-    fetchData();
-  }, [dispatch, id]);
+      setCurrentImage(
+        game.image ? `http://localhost:8000/storage/${game.image}` : ""
+      ); // Set current image path
+    }
+  }, [game]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-    if (type === "checkbox") {
-      setFormData({ ...formData, [name]: checked });
-    } else if (type === "file") {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this game?")) {
+      dispatch(deleteGame(id));
+      navigate("/dashboard");
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const updatedData = { ...formData };
-    if (!formData.image) delete updatedData.image;
-
-    try {
-      await dispatch(updateGame({ id, data: updatedData }));
-      navigate("/games");
-    } catch (error) {
-      console.error("Failed to update the game:", error);
+  const handleChange = (e) => {
+    const { name, files } = e.target;
+    if (files && files[0]) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, [name]: reader.result }); // base64 string here
+      };
+      reader.readAsDataURL(files[0]); // Convert to base64
     }
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const data = {
+      name: formData.name,
+      category_id: formData.category_id,
+      description: formData.description,
+      rules:
+        formData.rules && typeof formData.rules === "object"
+          ? JSON.stringify(formData.rules)
+          : formData.rules,
+      image: formData.image,
+    };
+
+    dispatch(updateGame(id, data));
+    navigate("/dashboard");
   };
 
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500 py-10">Error: {error}</div>;
+  }
+
+  if (!game) {
+    return <div className="text-center py-10">Game not found</div>;
   }
 
   return (
@@ -121,7 +151,17 @@ function GameUpdate() {
         {/* Image */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Upload Image (Optional)
+            Current Image
+          </label>
+          {currentImage && (
+            <img
+              src={currentImage}
+              alt="Current Game"
+              className="mb-4 w-32 h-32 object-cover"
+            />
+          )}
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Upload New Image (Optional)
           </label>
           <input
             type="file"
@@ -148,17 +188,25 @@ function GameUpdate() {
         {/* Category */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category ID
+            Category
           </label>
-          <input
-            type="number"
+
+          <select
             name="category_id"
             value={formData.category_id}
             onChange={handleChange}
             className="w-full border rounded px-4 py-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter category ID"
             required
-          />
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {category.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Submit Button */}
@@ -168,6 +216,15 @@ function GameUpdate() {
             className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded"
           >
             Update Game
+          </button>
+        </div>
+        <div className="container mx-auto p-6">
+          {/* Update form here */}
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 hover:bg-red-600 text-white font-medium px-6 py-2 rounded mt-4"
+          >
+            Delete Game
           </button>
         </div>
       </form>

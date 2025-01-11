@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import Login from "./auth/Login.jsx";
@@ -19,6 +19,7 @@ createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <Header />
         <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={<App />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />

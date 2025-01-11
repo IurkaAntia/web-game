@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { createGame, selectGames } from "../../store/slices/gamesSlice";
+import { fetchCategory } from "../../store/slices/categorySlice";
 
 function GameCreate() {
   const dispatch = useDispatch();
+  const { category } = useSelector((state) => state.category);
   const { loading, error } = useSelector(selectGames);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(fetchCategory());
+  }, [dispatch]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -20,7 +28,14 @@ function GameCreate() {
     if (type === "checkbox") {
       setFormData({ ...formData, [name]: checked });
     } else if (type === "file") {
-      setFormData({ ...formData, [name]: files[0] });
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, [name]: reader.result });
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -29,13 +44,23 @@ function GameCreate() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-      console.log(data);
-    });
+    const data = {
+      name: formData.name,
+      category_id: formData.category_id,
+      description: formData.description,
+      rules:
+        formData.rules && typeof formData.rules === "object"
+          ? JSON.stringify(formData.rules)
+          : formData.rules,
+      image: formData.image,
+    };
 
+    console.log(data.image);
+    // Dispatch the update action with JSON data
     dispatch(createGame(data));
+
+    // Redirect after successful submission
+    navigate("/dashboard");
   };
 
   return (
@@ -124,17 +149,25 @@ function GameCreate() {
         {/* Category */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category ID
+            Category
           </label>
-          <input
-            type="number"
+
+          <select
             name="category_id"
             value={formData.category_id}
             onChange={handleChange}
             className="w-full border rounded px-4 py-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter category ID"
             required
-          />
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {category.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Submit Button */}

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const token = localStorage.getItem("auth_token");
@@ -60,6 +60,13 @@ const gamesSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    deleteGameSuccess: (state, action) => {
+      state.games = state.games.filter((game) => game.id !== action.payload);
+    },
+    deleteGameFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -76,6 +83,8 @@ export const {
   createGameStart,
   createGameSuccess,
   createGameFailure,
+  deleteGameSuccess,
+  deleteGameFailure,
 } = gamesSlice.actions;
 
 // Thunks
@@ -110,42 +119,65 @@ export const fetchGameById = (gameId) => async (dispatch) => {
   }
 };
 
-export const updateGame = (gameId, gameData) => async (dispatch) => {
+export const updateGame = (gameId, gameData) => async (dispatch, getState) => {
   dispatch(updateGameStart());
+
+  const token = getState().auth.token;
+
   try {
     const response = await axios.put(
-      `http://localhost:8000/api/games/${gameId}/edit`,
+      `http://localhost:8000/api/games/${gameId}/update`,
       gameData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       }
     );
+
     dispatch(updateGameSuccess(response.data));
   } catch (error) {
-    dispatch(updateGameFailure(error.response?.data || error.message));
+    dispatch(updateGameFailure(error));
   }
 };
 
 export const createGame = (gameData) => async (dispatch) => {
   dispatch(createGameStart());
-  console.log(token);
   try {
-    const response = await axios.get(
+    const response = await axios.post(
       "http://localhost:8000/api/games/store",
       gameData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       }
     );
     dispatch(createGameSuccess(response.data));
   } catch (error) {
     dispatch(createGameFailure(error.response?.data || error.message));
+  }
+};
+
+export const deleteGame = (id) => async (dispatch) => {
+  try {
+    const token = localStorage.getItem("auth_token"); // Get token from localStorage
+    // Make a DELETE request to the API
+    await axios.delete(`http://localhost:8000/api/games/${id}/destroy`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // If the request is successful, update the state by removing the game
+    dispatch(deleteGameSuccess(id));
+  } catch (error) {
+    console.error(
+      "Error deleting game:",
+      error.response?.data || error.message
+    );
+    // Optionally handle the error in state
+    dispatch(deleteGameFailure(error.response?.data || error.message));
   }
 };
 
